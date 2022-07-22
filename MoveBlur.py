@@ -5,30 +5,38 @@ from cv2 import Mat
 import numpy as np
 import math
 #透射变换
-def TousheTramfor():
-    im_src = cv2.imread('images/build.jpeg')
+def TousheTramfor(XorY,DarTaX,DarTaY):
+    im_src = cv2.imread('D:\\imageTestSar.png')
     h, w, c = im_src.shape
-
-    # 原始图像中物体的四个顶点的信息
-    pts_src = np.array([(0, 0), (640, 0), (0, 520), (640, 520)], dtype="float32")
+    if XorY==1:
+    #x方向形变 
+        DarTa=DarTaX
+    # 原始图像中物体的四个顶点的信息--im_src.shape[1]为宽度，im_src.shape[0]为高度
+        pts_src = np.array([(0, 0), (im_src.shape[1], 0), (im_src.shape[1], im_src.shape[0]), (0, im_src.shape[0])], dtype="float32")
     # 目标物体中的物体的四个顶点信息
-    pts_dst = np.array([(265, 30), (796, 99), (100, 473), (932, 373)], dtype="float32")
-
+        pts_dst = np.array([(DarTa, 0), (im_src.shape[1], 0), (im_src.shape[1]-DarTa, im_src.shape[0]), (0, im_src.shape[0])], dtype="float32")
+    else:
+    # y方向形变
+        DarTa=DarTaY
+    # 原始图像中物体的四个顶点的信息--im_src.shape[1]为宽度，im_src.shape[0]为高度
+        pts_src = np.array([(0, 0), (w, 0), (w, h), (0, h)], dtype="float32")
+    # 目标物体中的物体的四个顶点信息
+        pts_dst = np.array([(0, DarTa), (w, 0), (w, h-DarTa), (0, h)], dtype="float32")
     # 是一个3x3的矩阵，根据对应的两个点，计算出变换矩阵，由此将原始图像进行转换。
     M = cv2.getPerspectiveTransform(pts_src, pts_dst)
-    print(M.shape)
-    print(M)
-
+    # print(M.shape)
+    # print(M)
+    
     # 基于单应性矩阵，将原始图像转换成目标图像
-    im_out = cv2.warpPerspective(im_src, M, (w, h))
-
-    # plt.figure()
-    # plt.subplot(1, 2, 1), plt.imshow(im_src[:, :, ::-1]), plt.title('src')
-    # plt.xticks([]), plt.yticks([])
-    # plt.subplot(1, 2, 2), plt.imshow(im_out[:, :, ::-1]), plt.title('out')
-    # plt.xticks([]), plt.yticks([])
-
-    im_out.show()  # show dst
+    if  XorY==1:
+        im_out = cv2.warpPerspective(im_src, M, (w, h))
+    else:
+        im_out = cv2.warpPerspective(im_src, M, (w, h))
+    print(im_src.shape[1])
+    cv2.imwrite("D:\\imageTestSar1.png",im_out)
+    # cv2.imshow("ccc",im_out)
+    # cv2.waitKey()
+    #im_out.show()  # show dst
 
 def motion_blur(img, degree=2, angle=1):
     image = img.copy()
@@ -104,7 +112,8 @@ def GetImage():
    
     cv2.waitKey()
 if __name__ == '__main__':
-    GetImage()
+    TousheTramfor(2,300,400)
+    #GetImage()
     
    
    
